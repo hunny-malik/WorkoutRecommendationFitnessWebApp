@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMI & BMR Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #333;  /* Dark background */
+            color: #fff;             /* White text */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #444;  /* Slightly lighter dark background for the container */
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            width: 500px;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #fff;
+        }
+
+        .form-container {
+            margin: 20px 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ddd;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #333;
+            color: white;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .result {
+            margin-top: 30px;
+        }
+
+        #bmiValue, #bmrValue, #tdeeValue, #calorieGoalValue {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>BMI & BMR Calculator</h1>
+        <div class="form-container">
+            <label for="weight">Weight (kg):</label>
+            <input type="number" id="weight" placeholder="Enter your weight" required>
+
+            <label for="height">Height (m):</label>
+            <input type="number" id="height" step="0.01" placeholder="Enter your height" required>
+
+            <label for="age">Age (years):</label>
+            <input type="number" id="age" placeholder="Enter your age" required>
+
+            <label for="gender">Gender:</label>
+            <select id="gender">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+            </select>
+
+            <label for="activityLevel">Activity Level:</label>
+            <select id="activityLevel">
+                <option value="sedentary">Sedentary</option>
+                <option value="light">Lightly active</option>
+                <option value="moderate">Moderately active</option>
+                <option value="active">Active</option>
+                <option value="very_active">Very active</option>
+            </select>
+
+            <label for="goal">Goal:</label>
+            <select id="goal">
+                <option value="lose">Lose weight</option>
+                <option value="maintain">Maintain weight</option>
+                <option value="gain">Gain weight</option>
+            </select>
+
+            <button onclick="calculate()">Calculate</button>
+        </div>
+
+        <div class="result" id="result">
+            <p id="bmiValue"></p>
+            <p id="bmrValue"></p>
+            <p id="tdeeValue"></p>
+            <p id="calorieGoalValue"></p>
+        </div>
+    </div>
+
+    <script>
+        function calculate() {
+            // Get input values
+            const weight = parseFloat(document.getElementById('weight').value);
+            const height = parseFloat(document.getElementById('height').value);
+            const age = parseInt(document.getElementById('age').value, 10);
+            const gender = document.getElementById('gender').value;
+            const activityLevel = document.getElementById('activityLevel').value;
+            const goal = document.getElementById('goal').value;
+
+            // Validate inputs
+            if (!weight || !height || !age) {
+                alert("Please fill in all fields correctly!");
+                return;
+            }
+
+            // Calculate BMI
+            const bmi = (weight / (height ** 2)).toFixed(2);
+
+            // Calculate BMR
+            let bmr;
+            if (gender === 'male') {
+                bmr = 88.362 + (13.397 * weight) + (4.799 * height * 100) - (5.677 * age); // Height converted to cm
+            } else if (gender === 'female') {
+                bmr = 447.593 + (9.247 * weight) + (3.098 * height * 100) - (4.330 * age);
+            }
+
+            // Calculate TDEE
+            const activityMultipliers = {
+                "sedentary": 1.2,
+                "light": 1.375,
+                "moderate": 1.55,
+                "active": 1.725,
+                "very_active": 1.9
+            };
+            const tdee = bmr * activityMultipliers[activityLevel];
+
+            // Calculate daily calorie goal
+            let calorieGoal;
+            if (goal === 'lose') {
+                calorieGoal = tdee - 500;
+            } else if (goal === 'gain') {
+                calorieGoal = tdee + 500;
+            } else if (goal === 'maintain') {
+                calorieGoal = tdee;
+            }
+
+            // Display results
+            document.getElementById('bmiValue').textContent = `Your BMI: ${bmi}`;
+            document.getElementById('bmrValue').textContent = `Your BMR: ${bmr.toFixed(2)} calories/day`;
+            document.getElementById('tdeeValue').textContent = `Your TDEE: ${tdee.toFixed(2)} calories/day`;
+            document.getElementById('calorieGoalValue').textContent = `Calories required to ${goal} weight: ${calorieGoal.toFixed(2)} calories/day`;
+        }
+    </script>
+</body>
+</html>
